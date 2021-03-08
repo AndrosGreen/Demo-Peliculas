@@ -12,7 +12,8 @@ const MovieList = (props) => {
                 id = {movie.idPelicula}
                 nombre = {movie.nombre}
                 rating = {movie.rating}
-                handleOpen = {props.handleOpen}
+                handleOpenDelete = {props.handleOpenDelete}
+                handleOpenUpdate = {props.handleOpenUpdate}
             />
         );
     });

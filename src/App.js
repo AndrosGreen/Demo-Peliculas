@@ -3,16 +3,21 @@ import apiPeliculas from './api/apiPeliculas';
 import MovieList from './components/MovieList';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import MovieDeleteModal from './modals/MovieDeleteModal';
+import MovieUpdateModal from './modals/MovieUpdateModal';
 
 class App extends React.Component {
 
     state = { 
         movies : [], 
         term: '', 
-        show: false, 
+        showUpdate: false,
+        showDelete: false, 
         idMovie : 0, 
         movieNombre : '',
         movieRating : '',
+        _movieIdU: 0,
+        _movieNombreU: '',
+        _movieRatingU: ''
     };
 
     getPeliculas = async (event) => {
@@ -22,6 +27,15 @@ class App extends React.Component {
         });
         console.log(response.data);
         this.setState( {movies : response.data} );
+    }
+
+    getMovieByID = async (id) => {
+        const response = await apiPeliculas.get('pelicula/' + id,{
+            params: {}
+        });
+        let actMovie = response.data;
+        this.setState( {_movieIdU: actMovie.idPelicula, _movieNombreU: actMovie.nombre, _movieRatingU: actMovie.rating} );
+        console.log(actMovie);
     }
 
     insertMovie = async (event) => {
@@ -56,10 +70,18 @@ class App extends React.Component {
     }
     
     // handle modal
-    handleClose = () => this.setState({show:false});
-    handleOpen = (id) => { 
-      this.setState({show:true, idMovie : id});
+    
+    handleCloseDelete = () => this.setState({showDelete:false});
+    handleOpenDelete = (id) => { 
+        this.setState({showDelete:true, idMovie : id});
     }
+
+    handleCloseUpdate = () => this.setState({showUpdate:false});
+    handleOpenUpdate = (id) => {
+        this.getMovieByID(id);
+        this.setState({showUpdate: true});
+    } 
+
 
     render (){
         return (
@@ -86,15 +108,27 @@ class App extends React.Component {
             </form>
             
             <button className="btn btn-primary" onClick={this.loadMovies} style={{margin: "5px"}}> Show All </button>
-            <button className="btn btn-primary" style={{margin: "5px"}}> Modal </button>
+            <button className="btn btn-primary" onClick={() => this.getMovieByID(14)} style={{margin: "5px"}}> Modal </button>
             
-            <MovieList movies = {this.state.movies} handleOpen={this.handleOpen}/>
+            <MovieList 
+                movies = {this.state.movies} 
+                handleOpenDelete={this.handleOpenDelete}
+                handleOpenUpdate ={this.handleOpenUpdate}
+            />
 
             <MovieDeleteModal 
-                show = {this.state.show} 
-                handleClose = {this.handleClose}
+                show = {this.state.showDelete} 
+                handleClose = {this.handleCloseDelete}
                 deleteMovie = {this.deleteMovie}
                 idMovie = {this.state.idMovie}
+            />
+
+            <MovieUpdateModal
+                show = {this.state.showUpdate}
+                handleClose = {this.handleCloseUpdate}
+                id = {this.state._movieIdU}
+                nombre = {this.state._movieNombreU}
+                rating = {this.state._movieRatingU}
             />
 
           </div>
