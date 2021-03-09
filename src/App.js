@@ -17,7 +17,7 @@ class App extends React.Component {
         movieRating : '',
         _movieIdU: 0,
         _movieNombreU: '',
-        _movieRatingU: ''
+        _movieRatingU: '',
     };
 
     getPeliculas = async (event) => {
@@ -66,9 +66,20 @@ class App extends React.Component {
         console.log(idMovie);
         this.loadMovies();
         
-        this.handleClose();
+        this.handleCloseDelete();
     }
     
+    updateMovie = async (idMovie, nombre, rating) => {
+        const response = await apiPeliculas.post('update',{
+            idPelicula : idMovie,
+            nombre : nombre,
+            rating : rating
+        });
+        console.log(response.data);
+        this.loadMovies();
+        this.handleCloseUpdate();
+    }
+
     // handle modal
     
     handleCloseDelete = () => this.setState({showDelete:false});
@@ -129,6 +140,7 @@ class App extends React.Component {
                 id = {this.state._movieIdU}
                 nombre = {this.state._movieNombreU}
                 rating = {this.state._movieRatingU}
+                update = {this.updateMovie}
             />
 
           </div>
